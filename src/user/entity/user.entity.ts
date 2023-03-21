@@ -1,0 +1,38 @@
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
+
+@Entity('users')
+export class UserEntity {
+  @PrimaryGeneratedColumn('uuid') uuid: string;
+
+  @Column({ type: 'varchar', nullable: false })
+  name: string;
+
+  @Column({ type: 'varchar', nullable: false, unique: true })
+  emailAddress: string;
+
+  @Column({ type: 'varchar', nullable: false })
+  password: string;
+
+  @Column({ type: 'boolean', nullable: false, default: true })
+  isActive: boolean;
+
+  @Column({ type: 'boolean', nullable: false, default: false })
+  isSoftDeleted: boolean;
+
+  @CreateDateColumn() createdAt?: Date;
+
+  @UpdateDateColumn() updatedAt?: Date;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10); // return to use .env here
+  }
+}
