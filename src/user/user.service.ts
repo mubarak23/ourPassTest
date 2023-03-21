@@ -10,6 +10,8 @@ import { LoginUserDto } from './dto/user.login.dto';
 import { comparePasswords } from 'src/shared/utils';
 import { JwtPayload } from './interface/payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterUserStatus } from './interface/register-user-status.interface';
+import { LoginUserStatus } from './interface/login-user.interface';
 
 @Injectable()
 export class UserService {
@@ -18,6 +20,35 @@ export class UserService {
     private readonly userRepo: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async register(userDto: CreateUserDto): Promise<RegisterUserStatus> {
+    let status: RegisterUserStatus = {
+      success: true,
+      message: 'user registered',
+    };
+
+    try {
+      await this.createUser(userDto);
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+
+    return status;
+  }
+
+  async login(loginUserDto: LoginUserDto): Promise<LoginUserStatus> {
+    const user = await this.findByLogin(loginUserDto);
+
+    const token = this._createToken(user);
+
+    return {
+      emailAddress: user.emailAddress,
+      ...token,
+    };
+  }
 
   async findOne(options?: object): Promise<UserDto> {
     const user = await this.userRepo.findOne(options);
