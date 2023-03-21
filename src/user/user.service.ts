@@ -8,12 +8,15 @@ import { UserEntity } from './entity/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginUserDto } from './dto/user.login.dto';
 import { comparePasswords } from 'src/shared/utils';
+import { JwtPayload } from './interface/payload.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepo: Repository<UserEntity>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async findOne(options?: object): Promise<UserDto> {
@@ -65,5 +68,24 @@ export class UserService {
   private _senitizeUser(user: UserEntity) {
     delete user.password;
     return user;
+  }
+
+  async validateUser(payload: JwtPayload): Promise<UserDto> {
+    const user = await this.findByPayLoad(payload);
+    if (!user) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
+  }
+
+  private _createToken({ emailAddress }: UserDto): any {
+    const expiresIn = process.env.EXPIRESIN;
+
+    const user: JwtPayload = { emailAddress };
+    const accessToken = this.jwtService.sign(user);
+    return {
+      expiresIn,
+      accessToken,
+    };
   }
 }
