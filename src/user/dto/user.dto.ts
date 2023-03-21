@@ -9,7 +9,7 @@ export class UserDto {
 
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  emailAddress: string;
 
   createdAt?: Date;
 }

@@ -2,7 +2,7 @@ import { IsNotEmpty } from '@nestjs/class-validator';
 
 export class LoginUserDto {
   @IsNotEmpty()
-  readonly email: string;
+  readonly emalAddress: string;
 
   @IsNotEmpty()
   readonly password: string;
