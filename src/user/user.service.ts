@@ -7,7 +7,8 @@ import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entity/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginUserDto } from './dto/user.login.dto';
-import { comparePasswords } from 'src/shared/utils';
+import { comparePasswords, hashPassword } from 'src/shared/utils';
+import { sign } from 'jsonwebtoken';
 import { JwtPayload } from './interface/payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserStatus } from './interface/register-user-status.interface';
@@ -17,7 +18,7 @@ import { LoginUserStatus } from './interface/login-user.interface';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepo: Repository<UserEntity>,
+    private usersRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -29,6 +30,7 @@ export class UserService {
 
     try {
       await this.createUser(userDto);
+      return status;
     } catch (err) {
       status = {
         success: false,
@@ -51,7 +53,7 @@ export class UserService {
   }
 
   async findOne(options?: object): Promise<UserDto> {
-    const user = await this.userRepo.findOne(options);
+    const user = await this.usersRepository.findOne(options);
     return toUserDto(user);
   }
 
@@ -60,25 +62,29 @@ export class UserService {
   }
   async createUser(userDto: CreateUserDto): Promise<UserDto> {
     const { name, emailAddress, password } = userDto;
-
-    const userExist = await this.userRepo.findOne({ where: { emailAddress } });
+    const userExist = await this.usersRepository.findOne({
+      where: { emailAddress },
+    });
 
     if (userExist) {
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     }
-
-    const user: UserEntity = this.userRepo.create({
+    const hasPassword = await hashPassword(password);
+    const user = await this.usersRepository.save({
       uuid: uuidv4(),
       name,
       emailAddress,
-      password,
+      password: hasPassword,
     });
-    await this.userRepo.save(user);
-    return toUserDto(user);
+    const saveUser = await this.usersRepository.findOne({
+      where: { emailAddress },
+    });
+
+    return toUserDto(saveUser);
   }
 
   async findByLogin({ emalAddress, password }: LoginUserDto): Promise<UserDto> {
-    const user = await this.userRepo.findOne({
+    const user = await this.usersRepository.findOne({
       where: { emailAddress: emalAddress },
     });
 
@@ -109,11 +115,12 @@ export class UserService {
     return user;
   }
 
-  private _createToken({ emailAddress }: UserDto): any {
+  private _createToken({ emailAddress, uuid }: UserDto): any {
     const expiresIn = process.env.EXPIRESIN;
 
-    const user: JwtPayload = { emailAddress };
-    const accessToken = this.jwtService.sign(user);
+    const user: JwtPayload = { emailAddress, uuid };
+    const accessToken = sign({ ...user }, process.env.JWT_SECRET);
+    /// this.jwtService.sign(user);
     return {
       expiresIn,
       accessToken,

@@ -33,9 +33,4 @@ export class UserEntity {
   @CreateDateColumn() createdAt?: Date;
 
   @UpdateDateColumn() updatedAt?: Date;
-
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10); // return to use .env here
-  }
 }
