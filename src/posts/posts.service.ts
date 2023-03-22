@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create.post.dto';
 import { EditPostDto } from './dto/edit.post.dto';
 import { PostEntity } from './entity/post.entity';
+import { AllPostInterface } from './interface/all-posts.interface';
 import { PostInterface } from './interface/post.interface';
 
 @Injectable()
@@ -127,6 +128,37 @@ export class PostsService {
       post.updatedAt = new Date();
 
       await this.postRepository.save(post);
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+    return status;
+  }
+  async allCategory(): Promise<AllPostInterface> {
+    let status: AllPostInterface = {
+      success: true,
+      message: 'All Posts',
+    };
+
+    try {
+      const posts = await this.postRepository.find({
+        where: { isSoftDeleted: false },
+      });
+
+      const transformPosts = posts.map((post) => {
+        return {
+          id: post.id,
+          user_uuid: post.user_uuid,
+          categoryId: post.categoryId,
+          title: post.title,
+          content: post.content,
+        };
+      });
+
+      status.posts = transformPosts;
       return status;
     } catch (err) {
       status = {
