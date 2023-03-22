@@ -1,5 +1,7 @@
 import { IsNotEmpty } from '@nestjs/class-validator';
 export class CategoryDto {
+  id?: number;
+
   @IsNotEmpty()
   user_uuid: string;
 

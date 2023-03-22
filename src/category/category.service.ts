@@ -134,15 +134,20 @@ export class CategoryService {
     };
 
     try {
-      const users = (await this.categoryRepository.find()).map((category) => {
+      const categories = await this.categoryRepository.find({
+        where: { isSoftDeleted: false },
+      });
+
+      const transformCategiries = categories.map((category) => {
         return {
+          id: category.id,
           user_uuid: category.user_uuid,
           name: category.name,
           description: category.description,
         };
       });
 
-      status.users = users;
+      status.categories = transformCategiries;
       return status;
     } catch (err) {
       status = {
