@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create.category.dto';
 import { EditCategoryDto } from './dto/edit.category.dto';
 import { CategoryEntity } from './entity/category.entity';
+import { AllCategoryInterface } from './interface/all-category.interface';
 import { CategoryInterface } from './interface/category.interface';
 
 @Injectable()
@@ -79,6 +80,60 @@ export class CategoryService {
       category.updatedAt = new Date();
 
       await this.categoryRepository.save(category);
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+    return status;
+  }
+  async deleteCategory(id: number): Promise<CategoryInterface> {
+    let status: CategoryInterface = {
+      success: true,
+      message: 'Category Deleted',
+    };
+    const category = await this.findCategoryById(id);
+
+    if (!category) {
+      throw new HttpException(
+        'Category Does Not Exist exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    try {
+      category.isSoftDeleted = true;
+      category.updatedAt = new Date();
+
+      await this.categoryRepository.save(category);
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+    return status;
+  }
+
+  async allCategory(): Promise<AllCategoryInterface> {
+    let status: AllCategoryInterface = {
+      success: true,
+      message: 'All Category',
+    };
+
+    try {
+      const users = (await this.categoryRepository.find()).map((category) => {
+        return {
+          user_uuid: category.user_uuid,
+          name: category.name,
+          description: category.description,
+        };
+      });
+
+      status.users = users;
       return status;
     } catch (err) {
       status = {
