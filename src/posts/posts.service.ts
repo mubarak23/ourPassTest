@@ -77,7 +77,7 @@ export class PostsService {
   async editPost(id: number, editPost: EditPostDto): Promise<PostInterface> {
     let status: PostInterface = {
       success: true,
-      message: 'Category detail edited',
+      message: 'Post detail edited',
     };
 
     try {
@@ -89,6 +89,41 @@ export class PostsService {
       if (editPost.content) {
         post.content = editPost.content;
       }
+      post.updatedAt = new Date();
+
+      await this.postRepository.save(post);
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+    return status;
+  }
+
+  async deletePost(id: number, user_uuid: string): Promise<PostInterface> {
+    let status: PostInterface = {
+      success: true,
+      message: 'Post Deleted',
+    };
+    const post = await this.findPostById(id);
+
+    if (!post) {
+      throw new HttpException(
+        'Post Does Not Exist exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (post.user_uuid !== user_uuid) {
+      throw new HttpException(
+        'You Cannot Delete a Post You Did Not Create',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    try {
+      post.isSoftDeleted = true;
       post.updatedAt = new Date();
 
       await this.postRepository.save(post);
