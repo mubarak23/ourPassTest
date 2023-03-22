@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
       // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    CategoryModule,
   ],
 
   controllers: [AppController],
