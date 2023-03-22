@@ -2,7 +2,7 @@ import { IsNotEmpty, IsEmail } from '@nestjs/class-validator';
 
 export class UserDto {
   @IsNotEmpty()
-  uuid: string;
+  user_uuid: string;
 
   @IsNotEmpty()
   name: string;

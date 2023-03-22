@@ -13,7 +13,7 @@ export class UserEntity {
   @PrimaryGeneratedColumn('increment') id: number;
 
   @Column('uuid')
-  uuid: string;
+  user_uuid: string;
 
   @Column({ type: 'varchar', nullable: false })
   name: string;

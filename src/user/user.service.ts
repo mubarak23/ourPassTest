@@ -70,8 +70,8 @@ export class UserService {
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     }
     const hasPassword = await hashPassword(password);
-    const user = await this.usersRepository.save({
-      uuid: uuidv4(),
+    await this.usersRepository.save({
+      user_uuid: uuidv4(),
       name,
       emailAddress,
       password: hasPassword,
@@ -115,10 +115,10 @@ export class UserService {
     return user;
   }
 
-  private _createToken({ emailAddress, uuid }: UserDto): any {
+  private _createToken({ emailAddress, user_uuid }: UserDto): any {
     const expiresIn = process.env.EXPIRESIN;
 
-    const user: JwtPayload = { emailAddress, uuid };
+    const user: JwtPayload = { emailAddress, user_uuid };
     const accessToken = sign({ ...user }, process.env.JWT_SECRET);
     /// this.jwtService.sign(user);
     return {
