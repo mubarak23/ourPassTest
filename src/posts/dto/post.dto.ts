@@ -3,6 +3,9 @@ export class PostDto {
   id?: number;
 
   @IsNotEmpty()
+  categoryId: number;
+
+  @IsNotEmpty()
   user_uuid: string;
 
   @IsNotEmpty()
