@@ -4,6 +4,7 @@ import { CategoryService } from 'src/category/category.service';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create.post.dto';
+import { EditPostDto } from './dto/edit.post.dto';
 import { PostEntity } from './entity/post.entity';
 import { PostInterface } from './interface/post.interface';
 
@@ -50,6 +51,47 @@ export class PostsService {
         title: createPostDto.title,
         content: createPostDto.content,
       });
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+    return status;
+  }
+
+  async findPostById(id: number): Promise<PostEntity> {
+    const post = await this.postRepository.findOne({
+      where: { id, isSoftDeleted: false },
+    });
+    if (!post) {
+      throw new HttpException(
+        'Category Does Not Exist exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return post;
+  }
+
+  async editPost(id: number, editPost: EditPostDto): Promise<PostInterface> {
+    let status: PostInterface = {
+      success: true,
+      message: 'Category detail edited',
+    };
+
+    try {
+      const post = await this.findPostById(id);
+      if (editPost.title) {
+        post.title = editPost.title;
+      }
+
+      if (editPost.content) {
+        post.content = editPost.content;
+      }
+      post.updatedAt = new Date();
+
+      await this.postRepository.save(post);
       return status;
     } catch (err) {
       status = {
