@@ -68,7 +68,7 @@ export class PostsService {
     });
     if (!post) {
       throw new HttpException(
-        'Category Does Not Exist exist',
+        'Post Does Not Exist exist',
         HttpStatus.NOT_FOUND,
       );
     }
