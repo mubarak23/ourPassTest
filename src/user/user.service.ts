@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toUserDto } from 'src/shared/userMapping';
 import { Repository } from 'typeorm';
@@ -13,6 +18,8 @@ import { JwtPayload } from './interface/payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserStatus } from './interface/register-user-status.interface';
 import { LoginUserStatus } from './interface/login-user.interface';
+import { EditUserDto } from './dto/user.edit.dto';
+import { EditUserStatus } from './interface/edit-user-status.interfacre';
 
 @Injectable()
 export class UserService {
@@ -37,7 +44,6 @@ export class UserService {
         message: err,
       };
     }
-
     return status;
   }
 
@@ -81,6 +87,42 @@ export class UserService {
     });
 
     return toUserDto(saveUser);
+  }
+
+  async findUserByUuid(user_uuid: string): Promise<UserEntity> {
+    const user: UserEntity = await this.usersRepository.findOne({
+      where: { user_uuid },
+    });
+    if (!user) {
+      throw new NotFoundException('User Does Not Exist');
+    }
+    return user;
+  }
+
+  async editUser(
+    user_uuid: string,
+    editUser: EditUserDto,
+  ): Promise<EditUserStatus> {
+    let status: EditUserStatus = {
+      success: true,
+      message: 'user detail edited',
+    };
+    const user = await this.findUserByUuid(user_uuid);
+
+    try {
+      user.emailAddress = editUser.emailAddress;
+      user.name = editUser.name;
+      user.updatedAt = new Date();
+
+      await this.usersRepository.save(user);
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
+    }
+    return status;
   }
 
   async findByLogin({ emalAddress, password }: LoginUserDto): Promise<UserDto> {
