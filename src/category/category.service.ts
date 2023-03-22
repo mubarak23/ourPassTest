@@ -89,7 +89,10 @@ export class CategoryService {
     }
     return status;
   }
-  async deleteCategory(id: number): Promise<CategoryInterface> {
+  async deleteCategory(
+    id: number,
+    user_uuid: string,
+  ): Promise<CategoryInterface> {
     let status: CategoryInterface = {
       success: true,
       message: 'Category Deleted',
@@ -103,6 +106,12 @@ export class CategoryService {
       );
     }
 
+    if (category.user_uuid !== user_uuid) {
+      throw new HttpException(
+        'You Cannot Delete a Category You Did Not Create',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     try {
       category.isSoftDeleted = true;
       category.updatedAt = new Date();
