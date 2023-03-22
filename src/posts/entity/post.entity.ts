@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('posts')
-export class PostyEntity {
+export class PostEntity {
   @PrimaryGeneratedColumn('increment') id: number;
 
   @Column({ type: 'varchar', nullable: false })

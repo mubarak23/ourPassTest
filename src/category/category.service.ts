@@ -49,7 +49,7 @@ export class CategoryService {
   }
   async findCategoryById(id: number): Promise<CategoryEntity> {
     const category = await this.categoryRepository.findOne({
-      where: { id },
+      where: { id, isSoftDeleted: false },
     });
     if (!category) {
       throw new HttpException(
