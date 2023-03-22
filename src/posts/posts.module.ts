@@ -7,6 +7,7 @@ import { UserEntity } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 import { PostEntity } from './entity/post.entity';
 import { PostsService } from './posts.service';
+import { PostsController } from './posts.controller';
 
 @Module({
   imports: [
@@ -18,5 +19,6 @@ import { PostsService } from './posts.service';
     }),
   ],
   providers: [PostsService, CategoryService, UserService],
+  controllers: [PostsController],
 })
 export class PostsModule {}

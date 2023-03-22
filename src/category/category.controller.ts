@@ -37,11 +37,11 @@ export class CategoryController {
   @Post('/new')
   public async createCategory(
     @Req() req: any,
-    @Body() createUserDto: CreateCategoryDto,
+    @Body() createCategoryDto: CreateCategoryDto,
   ): Promise<CategoryInterface> {
     const user = req.user;
     const result: CategoryInterface = await this.categoryService.createCategory(
-      createUserDto,
+      createCategoryDto,
       user.user_uuid,
     );
 

@@ -137,7 +137,7 @@ export class PostsService {
     }
     return status;
   }
-  async allCategory(): Promise<AllPostInterface> {
+  async allPosts(): Promise<AllPostInterface> {
     let status: AllPostInterface = {
       success: true,
       message: 'All Posts',
