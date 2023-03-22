@@ -20,6 +20,8 @@ import { RegisterUserStatus } from './interface/register-user-status.interface';
 import { LoginUserStatus } from './interface/login-user.interface';
 import { EditUserDto } from './dto/user.edit.dto';
 import { EditUserStatus } from './interface/edit-user-status.interfacre';
+import { DeleteUserStatus } from './interface/delete-user.interface';
+import { AllUsers } from './interface/all-user.interface';
 
 @Injectable()
 export class UserService {
@@ -48,7 +50,28 @@ export class UserService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginUserStatus> {
-    const user = await this.findByLogin(loginUserDto);
+    const user = await this.usersRepository.findOne({
+      where: {
+        emailAddress: loginUserDto.emailAddress,
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.isSoftDeleted === true) {
+      throw new HttpException('User Was Deleted', HttpStatus.BAD_REQUEST);
+    }
+
+    const areEqual = await comparePasswords(
+      user.password,
+      loginUserDto.password,
+    );
+
+    if (!areEqual) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
 
     const token = this._createToken(user);
 
@@ -125,23 +148,52 @@ export class UserService {
     return status;
   }
 
-  async findByLogin({ emalAddress, password }: LoginUserDto): Promise<UserDto> {
-    const user = await this.usersRepository.findOne({
-      where: { emailAddress: emalAddress },
-    });
+  async deleteUser(user_uuid: string): Promise<DeleteUserStatus> {
+    let status: DeleteUserStatus = {
+      success: true,
+      message: 'User Deleted',
+    };
+    const user = await this.findUserByUuid(user_uuid);
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+    try {
+      user.isSoftDeleted = true;
+      user.updatedAt = new Date();
+
+      await this.usersRepository.save(user);
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
     }
+    return status;
+  }
 
-    // compare passwords
-    const areEqual = await comparePasswords(user.password, password);
+  async allUser(): Promise<AllUsers> {
+    let status: AllUsers = {
+      success: true,
+      message: 'All Users',
+    };
 
-    if (!areEqual) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    try {
+      const users = (await this.usersRepository.find()).map((user) => {
+        return {
+          user_uuid: user.user_uuid,
+          name: user.name,
+          emailAddress: user.emailAddress,
+        };
+      });
+
+      status.users = users;
+      return status;
+    } catch (err) {
+      status = {
+        success: false,
+        message: err,
+      };
     }
-
-    return toUserDto(user);
+    return status;
   }
 
   private _senitizeUser(user: UserEntity) {
