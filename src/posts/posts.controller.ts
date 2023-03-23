@@ -13,19 +13,19 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterUserStatus } from 'src/user/interface/register-user-status.interface';
-import { CategoryService } from './category.service';
-import { CreateCategoryDto } from './dto/create.category.dto';
-import { EditCategoryDto } from './dto/edit.category.dto';
-import { AllCategoryInterface } from './interface/all-category.interface';
-import { CategoryInterface } from './interface/category.interface';
+import { CreatePostDto } from './dto/create.post.dto';
+import { EditPostDto } from './dto/edit.post.dto';
+import { AllPostInterface } from './interface/all-posts.interface';
+import { PostInterface } from './interface/post.interface';
+import { PostsService } from './posts.service';
 
-@Controller('category')
-export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+@Controller('posts')
+export class PostsController {
+  constructor(private readonly postService: PostsService) {}
 
   @Get('/all')
-  public async allUsers(@Req() req: any): Promise<AllCategoryInterface> {
-    const result: RegisterUserStatus = await this.categoryService.allCategory();
+  public async allUsers(@Req() req: any): Promise<AllPostInterface> {
+    const result: RegisterUserStatus = await this.postService.allPosts();
 
     if (!result.success) {
       throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
@@ -33,15 +33,16 @@ export class CategoryController {
 
     return result;
   }
+
   @UseGuards(AuthGuard())
   @Post('/new')
-  public async createCategory(
+  public async createNewPost(
     @Req() req: any,
-    @Body() createCategoryDto: CreateCategoryDto,
-  ): Promise<CategoryInterface> {
+    @Body() createPostDto: CreatePostDto,
+  ): Promise<PostInterface> {
     const user = req.user;
-    const result: CategoryInterface = await this.categoryService.createCategory(
-      createCategoryDto,
+    const result: PostInterface = await this.postService.createPost(
+      createPostDto,
       user.user_uuid,
     );
 
@@ -54,13 +55,13 @@ export class CategoryController {
 
   @UseGuards(AuthGuard())
   @Patch('/:id')
-  public async editCategory(
+  public async editPost(
     @Param('id') id: number,
-    @Body() editCategoryDto: EditCategoryDto,
-  ): Promise<CategoryInterface> {
-    const result: CategoryInterface = await this.categoryService.editCategory(
+    @Body() editPostDto: EditPostDto,
+  ): Promise<PostInterface> {
+    const result: PostInterface = await this.postService.editPost(
       id,
-      editCategoryDto,
+      editPostDto,
     );
 
     if (!result.success) {
@@ -72,13 +73,13 @@ export class CategoryController {
 
   @UseGuards(AuthGuard())
   @Delete('/:id')
-  public async deleteUser(
+  public async deletePost(
     @Req() req: any,
     @Param('id') id: number,
-  ): Promise<CategoryInterface> {
+  ): Promise<PostInterface> {
     const user = req.user;
 
-    const result: CategoryInterface = await this.categoryService.deleteCategory(
+    const result: PostInterface = await this.postService.deletePost(
       id,
       user.user_uuid,
     );
