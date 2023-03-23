@@ -24,7 +24,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get('/all')
-  public async allUsers(@Req() req: any): Promise<AllCategoryInterface> {
+  public async allCategories(@Req() req: any): Promise<AllCategoryInterface> {
     const result: RegisterUserStatus = await this.categoryService.allCategory();
 
     if (!result.success) {
