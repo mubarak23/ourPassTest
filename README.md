@@ -1,73 +1,270 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- A rest api for a content management that does the following
+
+- **Posts**
+    - Create posts
+    - Delete posts
+    - Edit posts
+    - List posts
+- **Categories**
+    - Create a post category
+    - List all post categories
+    - Edit a post category
+    - Delete a post category
+- **Users**
+    - Create a user
+    - List all users
+    - Delete a user Bearer Token authentication
+    - Edit a single user's profile information
+
 
 ## Installation
 
-```bash
-$ npm install
-```
+# install package 
+-- npm install
+
+
+## Setup .env Variables
+- NODE_ENV=development
+- JWT_KEY_SECRET=
+
+- JWT_SECRET=
+- EXPIRESIN=
+- DATABASE_HOST=
+- USERNAME=
+- PASSWORD=
+- DATABASE=
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ npm start
 
 # watch mode
-$ npm run start:dev
+$ npm run stat:dev
 
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+## Running the app
 
 ```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+$ npm run build
 
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
+```bash
+## Endpoints 
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# REGISTER A USER
+- URL: /api/v1/user/register
+- METHOD: POST 
+- REQUIRED : NO
+- PAYLOAD SAMPLE: {
+  "name": "unknow soft",
+  "emailAddress": "unkown@gmail.com",
+  "password": "*******"
+}
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "user registered"
+}
 
-## Stay in touch
+# USER LOGIN
+- URL: /api/v1/user/login
+- METHOD: POST 
+- REQUIRED TOKEN: NO
+- PAYLOAD SAMPLE: {
+  "emailAddress": "unkown@gmail.com",
+  "password": "*******"
+}
+- RESPONSE SAMPLE: {
+  "emailAddress": "soft@gmail.com",
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbEFkZHJlc3MiOiJzb2Z0QGdtYWlsLmNvbSIsInVzZXJfdXVpZCI6ImMyYzRkZDJiLTFkNmUtNGJiZC1iYzI1LTY5MzQ4YjViNmFiNyIsImlhdCI6MTY3OTUxMTgzM30.N5vGB67t_B-In10Cm9q8G9fKFE9qStTLIxHK2TidsOk"
+}
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# EDIT USER
+- URL: /api/v1/user/:user_uuid
+- METHOD: PATCH 
+- REQUIRED TOKEN: YES
+- PAYLOAD SAMPLE:{
+   "name": "demo World",
+  "emailAddress": "demo@gmail.com"
+}
 
-## License
+- RESPONSE SAMPLE:{
+  "success": true,
+  "message": "user detail edited"
+}
 
-Nest is [MIT licensed](LICENSE).
+# DELETE A User
+- URL: /api/v1/user/:user_uuid
+- METHOD: DELETE 
+- REQUIRED TOKEN: YES
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "User Deleted"
+}
+
+# GET ALL USERS
+- URL: /api/v1/user/all
+- METHOD: GET
+- REQUIRED AUTH TOKEN HEADER: NO
+- SAMPLE RESPONSE: {
+  "success": true,
+  "message": "All Users",
+  "users": [
+    {
+      "user_uuid": "08dbeb24-3c43-407f-9e8b-71223a18453b",
+      "name": "demo World",
+      "emailAddress": "demo@gmail.com"
+    },
+    {
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "name": "delete soft",
+      "emailAddress": "soft@gmail.com"
+    },
+    {
+      "user_uuid": "1986c78b-a98f-403a-b13a-ad8f3ed8b867",
+      "name": "unknow soft",
+      "emailAddress": "unkown@gmail.com"
+    }
+  ]
+}
+
+
+
+# ADD A NEW CATEGORY
+- URL: /api/v1/category/new
+- METHOD: POST 
+- REQUIRED TOKEN: YES
+- PAYLOAD SAMPLE: {
+  "name": "Delete Edit ",
+  "description": "Somthing we are trying to delete"
+}
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "New Category Created"
+}
+
+
+# GET ALL CATEGORIES
+- URL: /api/v1/category/all
+- METHOD: GET
+- REQUIRED AUTH TOKEN HEADER: NO
+- SAMPLE RESPONSE: {
+  "success": true,
+  "message": "All Category",
+  "categories": [
+    {
+      "id": 1,
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "name": "Digital Coin",
+      "description": "Digital decentralize currency"
+    },
+    {
+      "id": 2,
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "name": "AliExpress",
+      "description": "Online commerce for young Genz"
+    },
+    {
+      "id": 4,
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "name": "Edit Completed",
+      "description": "Somthing we are trying to delete"
+    }
+  ]
+}
+
+# EDIT A CATEGORY
+- URL: /api/v1/category/:id
+- METHOD: PATCH 
+- REQUIRED TOKEN: YES
+- PAYLOAD SAMPLE:{
+  "name": "Edit Completed"
+}
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "Category details edited"
+}
+
+# DELETE A CATEGORY
+- URL: /api/v1/category/:id
+- METHOD: DELETE 
+- REQUIRED TOKEN: YES
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "Category Deleted"
+}
+
+# ADD A NEW POST
+- URL: /api/v1/post/new
+- METHOD: POST 
+- REQUIRED TOKEN: YES
+- PAYLOAD SAMPLE: {
+  "categoryId": 4,
+  "title": "Delete Delete ",
+  "content": "You Total 5 (delta 4), reused 0 (delta 0), pack-reused 0remote: Resolving deltas: 100% (4/4), completed with 4 local objects  "
+}
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "New Post Added"
+}
+
+# EDIT A POST
+- URL: /api/v1/post/:id
+- METHOD: PATCH 
+- REQUIRED TOKEN: YES
+- PAYLOAD SAMPLE:{
+  "name": "Edit Post"
+}
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "Post details edited"
+}
+
+# DELETE A POST
+- URL: /api/v1/post/:id
+- METHOD: DELETE 
+- REQUIRED TOKEN: YES
+- RESPONSE SAMPLE: {
+  "success": true,
+  "message": "Post Deleted"
+}
+
+# GET ALL POSTS
+- URL: /api/v1/post/all
+- METHOD: GET
+- REQUIRED AUTH TOKEN HEADER: NO
+- SAMPLE RESPONSE: {
+  "success": true,
+  "message": "All Posts",
+  "posts": [
+    {
+      "id": 1,
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "categoryId": 4,
+      "title": "Design API with Data efficiency in mind",
+      "content": "you believe will best showcase your experience and differentiate yourself from other, you believe will best showcase your experience and differentiate yourself from oth"
+    },
+    {
+      "id": 2,
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "categoryId": 4,
+      "title": "Edit Edit Edit ",
+      "content": "you Delete edit delete edit delete edit berience and differentiate yourself from oth"
+    },
+    {
+      "id": 4,
+      "user_uuid": "c2c4dd2b-1d6e-4bbd-bc25-69348b5b6ab7",
+      "categoryId": 4,
+      "title": "Edit Demo",
+      "content": "esolving deltas: 100% (4/4), completed with 4 local objects  "
+    }
+  ]
+}
+
+```
